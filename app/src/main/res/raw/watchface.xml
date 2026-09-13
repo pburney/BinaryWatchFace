@@ -5,24 +5,24 @@
   <Metadata key="PREVIEW_TIME" value="10:08:32"/>
 
   <UserConfigurations>
-    <BooleanConfiguration id="bcd" displayName="@string/cfg_bcd" defaultValue="FALSE"/>
-    <BooleanConfiguration id="labels" displayName="@string/cfg_labels" defaultValue="TRUE"/>
-    <ColorConfiguration id="litColor" displayName="@string/cfg_color" defaultValue="0">
-      <ColorOption id="0" colors="#FF33FF66"/>  <!-- Green -->
-      <ColorOption id="1" colors="#FF00C853"/>  <!-- Emerald -->
-      <ColorOption id="2" colors="#FF1DE9B6"/>  <!-- Teal -->
-      <ColorOption id="3" colors="#FF33E1FF"/>  <!-- Cyan -->
-      <ColorOption id="4" colors="#FF33B5FF"/>  <!-- Blue -->
-      <ColorOption id="5" colors="#FF5C6BC0"/>  <!-- Indigo -->
-      <ColorOption id="6" colors="#FF9B7BFF"/>  <!-- Violet -->
-      <ColorOption id="7" colors="#FFC061FF"/>  <!-- Purple -->
-      <ColorOption id="8" colors="#FFFF5CD2"/>  <!-- Magenta -->
-      <ColorOption id="9" colors="#FFFF6EA6"/>  <!-- Pink -->
-      <ColorOption id="10" colors="#FFFF5A5A"/>  <!-- Red -->
-      <ColorOption id="11" colors="#FFFF9E42"/>  <!-- Orange -->
-      <ColorOption id="12" colors="#FFFFC24B"/>  <!-- Amber -->
-      <ColorOption id="13" colors="#FFFFE14D"/>  <!-- Yellow -->
-      <ColorOption id="14" colors="#FFF5F5F5"/>  <!-- White -->
+    <BooleanConfiguration id="bcd" displayName="cfg_bcd" defaultValue="FALSE"/>
+    <BooleanConfiguration id="labels" displayName="cfg_labels" defaultValue="TRUE"/>
+    <ColorConfiguration id="litColor" displayName="cfg_color" defaultValue="0">
+      <ColorOption id="0" displayName="color_green" colors="#FF33FF66"/>
+      <ColorOption id="1" displayName="color_emerald" colors="#FF00C853"/>
+      <ColorOption id="2" displayName="color_teal" colors="#FF1DE9B6"/>
+      <ColorOption id="3" displayName="color_cyan" colors="#FF33E1FF"/>
+      <ColorOption id="4" displayName="color_blue" colors="#FF33B5FF"/>
+      <ColorOption id="5" displayName="color_indigo" colors="#FF5C6BC0"/>
+      <ColorOption id="6" displayName="color_violet" colors="#FF9B7BFF"/>
+      <ColorOption id="7" displayName="color_purple" colors="#FFC061FF"/>
+      <ColorOption id="8" displayName="color_magenta" colors="#FFFF5CD2"/>
+      <ColorOption id="9" displayName="color_pink" colors="#FFFF6EA6"/>
+      <ColorOption id="10" displayName="color_red" colors="#FFFF5A5A"/>
+      <ColorOption id="11" displayName="color_orange" colors="#FFFF9E42"/>
+      <ColorOption id="12" displayName="color_amber" colors="#FFFFC24B"/>
+      <ColorOption id="13" displayName="color_yellow" colors="#FFFFE14D"/>
+      <ColorOption id="14" displayName="color_white" colors="#FFF5F5F5"/>
     </ColorConfiguration>
   </UserConfigurations>
 
@@ -32,9 +32,13 @@
       <Rectangle x="0" y="0" width="450" height="450"><Fill color="#FF000000"/></Rectangle>
     </PartDraw>
 
-    <!-- ============ BINARY mode ============ -->
-    <Group name="mode_binary" x="0" y="0" width="450" height="450"
-           alpha="[CONFIGURATION.bcd] ? 0 : 1">
+    <!-- BCD vs BINARY is a UserConfiguration selection, not a per-frame value,
+         so it's modelled as a BooleanConfiguration/BooleanOption switch rather
+         than a computed alpha (alpha's declared type doesn't accept a
+         CONFIGURATION-driven ternary expression per the WFF XSD validator). -->
+    <BooleanConfiguration id="bcd">
+      <BooleanOption id="FALSE">
+        <Group name="mode_binary" x="0" y="0" width="450" height="450">
       <PartDraw x="95" y="158" width="30" height="30">
         <Ellipse x="0" y="0" width="30" height="30"><Fill color="#FF1C1C1C"/></Ellipse>
       </PartDraw>
@@ -89,131 +93,247 @@
       <PartDraw x="325" y="262" width="30" height="30">
         <Ellipse x="0" y="0" width="30" height="30"><Fill color="#FF1C1C1C"/></Ellipse>
       </PartDraw>
-      <Group x="95" y="158" width="30" height="30" name="b5_110_173" alpha="round(floor(([HOUR_0_23]) / 32) % 2)">
-        <PartDraw x="0" y="0" width="30" height="30">
-          <Ellipse x="0" y="0" width="30" height="30"><Fill color="[CONFIGURATION.litColor]"/></Ellipse>
-        </PartDraw>
-      </Group>
-      <Group x="141" y="158" width="30" height="30" name="b4_156_173" alpha="round(floor(([HOUR_0_23]) / 16) % 2)">
-        <PartDraw x="0" y="0" width="30" height="30">
-          <Ellipse x="0" y="0" width="30" height="30"><Fill color="[CONFIGURATION.litColor]"/></Ellipse>
-        </PartDraw>
-      </Group>
-      <Group x="187" y="158" width="30" height="30" name="b3_202_173" alpha="round(floor(([HOUR_0_23]) / 8) % 2)">
-        <PartDraw x="0" y="0" width="30" height="30">
-          <Ellipse x="0" y="0" width="30" height="30"><Fill color="[CONFIGURATION.litColor]"/></Ellipse>
-        </PartDraw>
-      </Group>
-      <Group x="233" y="158" width="30" height="30" name="b2_248_173" alpha="round(floor(([HOUR_0_23]) / 4) % 2)">
-        <PartDraw x="0" y="0" width="30" height="30">
-          <Ellipse x="0" y="0" width="30" height="30"><Fill color="[CONFIGURATION.litColor]"/></Ellipse>
-        </PartDraw>
-      </Group>
-      <Group x="279" y="158" width="30" height="30" name="b1_294_173" alpha="round(floor(([HOUR_0_23]) / 2) % 2)">
-        <PartDraw x="0" y="0" width="30" height="30">
-          <Ellipse x="0" y="0" width="30" height="30"><Fill color="[CONFIGURATION.litColor]"/></Ellipse>
-        </PartDraw>
-      </Group>
-      <Group x="325" y="158" width="30" height="30" name="b0_340_173" alpha="round(floor(([HOUR_0_23]) / 1) % 2)">
-        <PartDraw x="0" y="0" width="30" height="30">
-          <Ellipse x="0" y="0" width="30" height="30"><Fill color="[CONFIGURATION.litColor]"/></Ellipse>
-        </PartDraw>
-      </Group>
-      <Group x="95" y="210" width="30" height="30" name="b5_110_225" alpha="round(floor(([MINUTE]) / 32) % 2)">
-        <PartDraw x="0" y="0" width="30" height="30">
-          <Ellipse x="0" y="0" width="30" height="30"><Fill color="[CONFIGURATION.litColor]"/></Ellipse>
-        </PartDraw>
-      </Group>
-      <Group x="141" y="210" width="30" height="30" name="b4_156_225" alpha="round(floor(([MINUTE]) / 16) % 2)">
-        <PartDraw x="0" y="0" width="30" height="30">
-          <Ellipse x="0" y="0" width="30" height="30"><Fill color="[CONFIGURATION.litColor]"/></Ellipse>
-        </PartDraw>
-      </Group>
-      <Group x="187" y="210" width="30" height="30" name="b3_202_225" alpha="round(floor(([MINUTE]) / 8) % 2)">
-        <PartDraw x="0" y="0" width="30" height="30">
-          <Ellipse x="0" y="0" width="30" height="30"><Fill color="[CONFIGURATION.litColor]"/></Ellipse>
-        </PartDraw>
-      </Group>
-      <Group x="233" y="210" width="30" height="30" name="b2_248_225" alpha="round(floor(([MINUTE]) / 4) % 2)">
-        <PartDraw x="0" y="0" width="30" height="30">
-          <Ellipse x="0" y="0" width="30" height="30"><Fill color="[CONFIGURATION.litColor]"/></Ellipse>
-        </PartDraw>
-      </Group>
-      <Group x="279" y="210" width="30" height="30" name="b1_294_225" alpha="round(floor(([MINUTE]) / 2) % 2)">
-        <PartDraw x="0" y="0" width="30" height="30">
-          <Ellipse x="0" y="0" width="30" height="30"><Fill color="[CONFIGURATION.litColor]"/></Ellipse>
-        </PartDraw>
-      </Group>
-      <Group x="325" y="210" width="30" height="30" name="b0_340_225" alpha="round(floor(([MINUTE]) / 1) % 2)">
-        <PartDraw x="0" y="0" width="30" height="30">
-          <Ellipse x="0" y="0" width="30" height="30"><Fill color="[CONFIGURATION.litColor]"/></Ellipse>
-        </PartDraw>
-      </Group>
-      <Group x="95" y="262" width="30" height="30" name="b5_110_277" alpha="round(floor(([SECOND]) / 32) % 2)">
-        <PartDraw x="0" y="0" width="30" height="30">
-          <Ellipse x="0" y="0" width="30" height="30"><Fill color="[CONFIGURATION.litColor]"/></Ellipse>
-        </PartDraw>
-      </Group>
-      <Group x="141" y="262" width="30" height="30" name="b4_156_277" alpha="round(floor(([SECOND]) / 16) % 2)">
-        <PartDraw x="0" y="0" width="30" height="30">
-          <Ellipse x="0" y="0" width="30" height="30"><Fill color="[CONFIGURATION.litColor]"/></Ellipse>
-        </PartDraw>
-      </Group>
-      <Group x="187" y="262" width="30" height="30" name="b3_202_277" alpha="round(floor(([SECOND]) / 8) % 2)">
-        <PartDraw x="0" y="0" width="30" height="30">
-          <Ellipse x="0" y="0" width="30" height="30"><Fill color="[CONFIGURATION.litColor]"/></Ellipse>
-        </PartDraw>
-      </Group>
-      <Group x="233" y="262" width="30" height="30" name="b2_248_277" alpha="round(floor(([SECOND]) / 4) % 2)">
-        <PartDraw x="0" y="0" width="30" height="30">
-          <Ellipse x="0" y="0" width="30" height="30"><Fill color="[CONFIGURATION.litColor]"/></Ellipse>
-        </PartDraw>
-      </Group>
-      <Group x="279" y="262" width="30" height="30" name="b1_294_277" alpha="round(floor(([SECOND]) / 2) % 2)">
-        <PartDraw x="0" y="0" width="30" height="30">
-          <Ellipse x="0" y="0" width="30" height="30"><Fill color="[CONFIGURATION.litColor]"/></Ellipse>
-        </PartDraw>
-      </Group>
-      <Group x="325" y="262" width="30" height="30" name="b0_340_277" alpha="round(floor(([SECOND]) / 1) % 2)">
-        <PartDraw x="0" y="0" width="30" height="30">
-          <Ellipse x="0" y="0" width="30" height="30"><Fill color="[CONFIGURATION.litColor]"/></Ellipse>
-        </PartDraw>
-      </Group>
-      <Group name="binary_labels" x="0" y="0" width="450" height="450"
-             alpha="[CONFIGURATION.labels] ? 1 : 0">
+      <Condition>
+        <Expressions>
+          <Expression name="b5_110_173">round(floor(([HOUR_0_23]) / 32) % 2)</Expression>
+        </Expressions>
+        <Compare expression="b5_110_173">
+          <Group x="95" y="158" width="30" height="30" name="b5_110_173">
+            <PartDraw x="0" y="0" width="30" height="30">
+              <Ellipse x="0" y="0" width="30" height="30"><Fill color="[CONFIGURATION.litColor]"/></Ellipse>
+            </PartDraw>
+          </Group>
+        </Compare>
+      </Condition>
+      <Condition>
+        <Expressions>
+          <Expression name="b4_156_173">round(floor(([HOUR_0_23]) / 16) % 2)</Expression>
+        </Expressions>
+        <Compare expression="b4_156_173">
+          <Group x="141" y="158" width="30" height="30" name="b4_156_173">
+            <PartDraw x="0" y="0" width="30" height="30">
+              <Ellipse x="0" y="0" width="30" height="30"><Fill color="[CONFIGURATION.litColor]"/></Ellipse>
+            </PartDraw>
+          </Group>
+        </Compare>
+      </Condition>
+      <Condition>
+        <Expressions>
+          <Expression name="b3_202_173">round(floor(([HOUR_0_23]) / 8) % 2)</Expression>
+        </Expressions>
+        <Compare expression="b3_202_173">
+          <Group x="187" y="158" width="30" height="30" name="b3_202_173">
+            <PartDraw x="0" y="0" width="30" height="30">
+              <Ellipse x="0" y="0" width="30" height="30"><Fill color="[CONFIGURATION.litColor]"/></Ellipse>
+            </PartDraw>
+          </Group>
+        </Compare>
+      </Condition>
+      <Condition>
+        <Expressions>
+          <Expression name="b2_248_173">round(floor(([HOUR_0_23]) / 4) % 2)</Expression>
+        </Expressions>
+        <Compare expression="b2_248_173">
+          <Group x="233" y="158" width="30" height="30" name="b2_248_173">
+            <PartDraw x="0" y="0" width="30" height="30">
+              <Ellipse x="0" y="0" width="30" height="30"><Fill color="[CONFIGURATION.litColor]"/></Ellipse>
+            </PartDraw>
+          </Group>
+        </Compare>
+      </Condition>
+      <Condition>
+        <Expressions>
+          <Expression name="b1_294_173">round(floor(([HOUR_0_23]) / 2) % 2)</Expression>
+        </Expressions>
+        <Compare expression="b1_294_173">
+          <Group x="279" y="158" width="30" height="30" name="b1_294_173">
+            <PartDraw x="0" y="0" width="30" height="30">
+              <Ellipse x="0" y="0" width="30" height="30"><Fill color="[CONFIGURATION.litColor]"/></Ellipse>
+            </PartDraw>
+          </Group>
+        </Compare>
+      </Condition>
+      <Condition>
+        <Expressions>
+          <Expression name="b0_340_173">round(floor(([HOUR_0_23]) / 1) % 2)</Expression>
+        </Expressions>
+        <Compare expression="b0_340_173">
+          <Group x="325" y="158" width="30" height="30" name="b0_340_173">
+            <PartDraw x="0" y="0" width="30" height="30">
+              <Ellipse x="0" y="0" width="30" height="30"><Fill color="[CONFIGURATION.litColor]"/></Ellipse>
+            </PartDraw>
+          </Group>
+        </Compare>
+      </Condition>
+      <Condition>
+        <Expressions>
+          <Expression name="b5_110_225">round(floor(([MINUTE]) / 32) % 2)</Expression>
+        </Expressions>
+        <Compare expression="b5_110_225">
+          <Group x="95" y="210" width="30" height="30" name="b5_110_225">
+            <PartDraw x="0" y="0" width="30" height="30">
+              <Ellipse x="0" y="0" width="30" height="30"><Fill color="[CONFIGURATION.litColor]"/></Ellipse>
+            </PartDraw>
+          </Group>
+        </Compare>
+      </Condition>
+      <Condition>
+        <Expressions>
+          <Expression name="b4_156_225">round(floor(([MINUTE]) / 16) % 2)</Expression>
+        </Expressions>
+        <Compare expression="b4_156_225">
+          <Group x="141" y="210" width="30" height="30" name="b4_156_225">
+            <PartDraw x="0" y="0" width="30" height="30">
+              <Ellipse x="0" y="0" width="30" height="30"><Fill color="[CONFIGURATION.litColor]"/></Ellipse>
+            </PartDraw>
+          </Group>
+        </Compare>
+      </Condition>
+      <Condition>
+        <Expressions>
+          <Expression name="b3_202_225">round(floor(([MINUTE]) / 8) % 2)</Expression>
+        </Expressions>
+        <Compare expression="b3_202_225">
+          <Group x="187" y="210" width="30" height="30" name="b3_202_225">
+            <PartDraw x="0" y="0" width="30" height="30">
+              <Ellipse x="0" y="0" width="30" height="30"><Fill color="[CONFIGURATION.litColor]"/></Ellipse>
+            </PartDraw>
+          </Group>
+        </Compare>
+      </Condition>
+      <Condition>
+        <Expressions>
+          <Expression name="b2_248_225">round(floor(([MINUTE]) / 4) % 2)</Expression>
+        </Expressions>
+        <Compare expression="b2_248_225">
+          <Group x="233" y="210" width="30" height="30" name="b2_248_225">
+            <PartDraw x="0" y="0" width="30" height="30">
+              <Ellipse x="0" y="0" width="30" height="30"><Fill color="[CONFIGURATION.litColor]"/></Ellipse>
+            </PartDraw>
+          </Group>
+        </Compare>
+      </Condition>
+      <Condition>
+        <Expressions>
+          <Expression name="b1_294_225">round(floor(([MINUTE]) / 2) % 2)</Expression>
+        </Expressions>
+        <Compare expression="b1_294_225">
+          <Group x="279" y="210" width="30" height="30" name="b1_294_225">
+            <PartDraw x="0" y="0" width="30" height="30">
+              <Ellipse x="0" y="0" width="30" height="30"><Fill color="[CONFIGURATION.litColor]"/></Ellipse>
+            </PartDraw>
+          </Group>
+        </Compare>
+      </Condition>
+      <Condition>
+        <Expressions>
+          <Expression name="b0_340_225">round(floor(([MINUTE]) / 1) % 2)</Expression>
+        </Expressions>
+        <Compare expression="b0_340_225">
+          <Group x="325" y="210" width="30" height="30" name="b0_340_225">
+            <PartDraw x="0" y="0" width="30" height="30">
+              <Ellipse x="0" y="0" width="30" height="30"><Fill color="[CONFIGURATION.litColor]"/></Ellipse>
+            </PartDraw>
+          </Group>
+        </Compare>
+      </Condition>
+      <Condition>
+        <Expressions>
+          <Expression name="b5_110_277">round(floor(([SECOND]) / 32) % 2)</Expression>
+        </Expressions>
+        <Compare expression="b5_110_277">
+          <Group x="95" y="262" width="30" height="30" name="b5_110_277">
+            <PartDraw x="0" y="0" width="30" height="30">
+              <Ellipse x="0" y="0" width="30" height="30"><Fill color="[CONFIGURATION.litColor]"/></Ellipse>
+            </PartDraw>
+          </Group>
+        </Compare>
+      </Condition>
+      <Condition>
+        <Expressions>
+          <Expression name="b4_156_277">round(floor(([SECOND]) / 16) % 2)</Expression>
+        </Expressions>
+        <Compare expression="b4_156_277">
+          <Group x="141" y="262" width="30" height="30" name="b4_156_277">
+            <PartDraw x="0" y="0" width="30" height="30">
+              <Ellipse x="0" y="0" width="30" height="30"><Fill color="[CONFIGURATION.litColor]"/></Ellipse>
+            </PartDraw>
+          </Group>
+        </Compare>
+      </Condition>
+      <Condition>
+        <Expressions>
+          <Expression name="b3_202_277">round(floor(([SECOND]) / 8) % 2)</Expression>
+        </Expressions>
+        <Compare expression="b3_202_277">
+          <Group x="187" y="262" width="30" height="30" name="b3_202_277">
+            <PartDraw x="0" y="0" width="30" height="30">
+              <Ellipse x="0" y="0" width="30" height="30"><Fill color="[CONFIGURATION.litColor]"/></Ellipse>
+            </PartDraw>
+          </Group>
+        </Compare>
+      </Condition>
+      <Condition>
+        <Expressions>
+          <Expression name="b2_248_277">round(floor(([SECOND]) / 4) % 2)</Expression>
+        </Expressions>
+        <Compare expression="b2_248_277">
+          <Group x="233" y="262" width="30" height="30" name="b2_248_277">
+            <PartDraw x="0" y="0" width="30" height="30">
+              <Ellipse x="0" y="0" width="30" height="30"><Fill color="[CONFIGURATION.litColor]"/></Ellipse>
+            </PartDraw>
+          </Group>
+        </Compare>
+      </Condition>
+      <Condition>
+        <Expressions>
+          <Expression name="b1_294_277">round(floor(([SECOND]) / 2) % 2)</Expression>
+        </Expressions>
+        <Compare expression="b1_294_277">
+          <Group x="279" y="262" width="30" height="30" name="b1_294_277">
+            <PartDraw x="0" y="0" width="30" height="30">
+              <Ellipse x="0" y="0" width="30" height="30"><Fill color="[CONFIGURATION.litColor]"/></Ellipse>
+            </PartDraw>
+          </Group>
+        </Compare>
+      </Condition>
+      <Condition>
+        <Expressions>
+          <Expression name="b0_340_277">round(floor(([SECOND]) / 1) % 2)</Expression>
+        </Expressions>
+        <Compare expression="b0_340_277">
+          <Group x="325" y="262" width="30" height="30" name="b0_340_277">
+            <PartDraw x="0" y="0" width="30" height="30">
+              <Ellipse x="0" y="0" width="30" height="30"><Fill color="[CONFIGURATION.litColor]"/></Ellipse>
+            </PartDraw>
+          </Group>
+        </Compare>
+      </Condition>
+          <BooleanConfiguration id="labels">
+            <BooleanOption id="TRUE">
+              <Group name="binary_labels" x="0" y="0" width="450" height="450">
         <PartText x="41" y="147" width="46" height="52">
           <Text align="CENTER">
-            <SimpleText>
-              <Font family="SYNC_TO_DEVICE" size="22" weight="NORMAL" color="#FF8A8A8A">
-                <Template>H</Template>
-              </Font>
-            </SimpleText>
+            <Font family="SYNC_TO_DEVICE" size="22" weight="NORMAL" color="#FF8A8A8A">H</Font>
           </Text>
         </PartText>
         <PartText x="41" y="199" width="46" height="52">
           <Text align="CENTER">
-            <SimpleText>
-              <Font family="SYNC_TO_DEVICE" size="22" weight="NORMAL" color="#FF8A8A8A">
-                <Template>M</Template>
-              </Font>
-            </SimpleText>
+            <Font family="SYNC_TO_DEVICE" size="22" weight="NORMAL" color="#FF8A8A8A">M</Font>
           </Text>
         </PartText>
         <PartText x="41" y="251" width="46" height="52">
           <Text align="CENTER">
-            <SimpleText>
-              <Font family="SYNC_TO_DEVICE" size="22" weight="NORMAL" color="#FF8A8A8A">
-                <Template>S</Template>
-              </Font>
-            </SimpleText>
+            <Font family="SYNC_TO_DEVICE" size="22" weight="NORMAL" color="#FF8A8A8A">S</Font>
           </Text>
         </PartText>
-      </Group>
-    </Group>
-
-    <!-- ============ BCD mode ============ -->
-    <Group name="mode_bcd" x="0" y="0" width="450" height="450"
-           alpha="[CONFIGURATION.bcd] ? 1 : 0">
+              </Group>
+            </BooleanOption>
+          </BooleanConfiguration>
+        </Group>
+      </BooleanOption>
+      <BooleanOption id="TRUE">
+        <Group name="mode_bcd" x="0" y="0" width="450" height="450">
       <PartDraw x="95" y="236" width="30" height="30">
         <Ellipse x="0" y="0" width="30" height="30"><Fill color="#FF1C1C1C"/></Ellipse>
       </PartDraw>
@@ -274,163 +394,284 @@
       <PartDraw x="325" y="288" width="30" height="30">
         <Ellipse x="0" y="0" width="30" height="30"><Fill color="#FF1C1C1C"/></Ellipse>
       </PartDraw>
-      <Group x="95" y="236" width="30" height="30" name="b1_110_251" alpha="round(floor((floor([HOUR_0_23] / 10)) / 2) % 2)">
-        <PartDraw x="0" y="0" width="30" height="30">
-          <Ellipse x="0" y="0" width="30" height="30"><Fill color="[CONFIGURATION.litColor]"/></Ellipse>
-        </PartDraw>
-      </Group>
-      <Group x="95" y="288" width="30" height="30" name="b0_110_303" alpha="round(floor((floor([HOUR_0_23] / 10)) / 1) % 2)">
-        <PartDraw x="0" y="0" width="30" height="30">
-          <Ellipse x="0" y="0" width="30" height="30"><Fill color="[CONFIGURATION.litColor]"/></Ellipse>
-        </PartDraw>
-      </Group>
-      <Group x="141" y="132" width="30" height="30" name="b3_156_147" alpha="round(floor((([HOUR_0_23] % 10)) / 8) % 2)">
-        <PartDraw x="0" y="0" width="30" height="30">
-          <Ellipse x="0" y="0" width="30" height="30"><Fill color="[CONFIGURATION.litColor]"/></Ellipse>
-        </PartDraw>
-      </Group>
-      <Group x="141" y="184" width="30" height="30" name="b2_156_199" alpha="round(floor((([HOUR_0_23] % 10)) / 4) % 2)">
-        <PartDraw x="0" y="0" width="30" height="30">
-          <Ellipse x="0" y="0" width="30" height="30"><Fill color="[CONFIGURATION.litColor]"/></Ellipse>
-        </PartDraw>
-      </Group>
-      <Group x="141" y="236" width="30" height="30" name="b1_156_251" alpha="round(floor((([HOUR_0_23] % 10)) / 2) % 2)">
-        <PartDraw x="0" y="0" width="30" height="30">
-          <Ellipse x="0" y="0" width="30" height="30"><Fill color="[CONFIGURATION.litColor]"/></Ellipse>
-        </PartDraw>
-      </Group>
-      <Group x="141" y="288" width="30" height="30" name="b0_156_303" alpha="round(floor((([HOUR_0_23] % 10)) / 1) % 2)">
-        <PartDraw x="0" y="0" width="30" height="30">
-          <Ellipse x="0" y="0" width="30" height="30"><Fill color="[CONFIGURATION.litColor]"/></Ellipse>
-        </PartDraw>
-      </Group>
-      <Group x="187" y="184" width="30" height="30" name="b2_202_199" alpha="round(floor((floor([MINUTE] / 10)) / 4) % 2)">
-        <PartDraw x="0" y="0" width="30" height="30">
-          <Ellipse x="0" y="0" width="30" height="30"><Fill color="[CONFIGURATION.litColor]"/></Ellipse>
-        </PartDraw>
-      </Group>
-      <Group x="187" y="236" width="30" height="30" name="b1_202_251" alpha="round(floor((floor([MINUTE] / 10)) / 2) % 2)">
-        <PartDraw x="0" y="0" width="30" height="30">
-          <Ellipse x="0" y="0" width="30" height="30"><Fill color="[CONFIGURATION.litColor]"/></Ellipse>
-        </PartDraw>
-      </Group>
-      <Group x="187" y="288" width="30" height="30" name="b0_202_303" alpha="round(floor((floor([MINUTE] / 10)) / 1) % 2)">
-        <PartDraw x="0" y="0" width="30" height="30">
-          <Ellipse x="0" y="0" width="30" height="30"><Fill color="[CONFIGURATION.litColor]"/></Ellipse>
-        </PartDraw>
-      </Group>
-      <Group x="233" y="132" width="30" height="30" name="b3_248_147" alpha="round(floor((([MINUTE] % 10)) / 8) % 2)">
-        <PartDraw x="0" y="0" width="30" height="30">
-          <Ellipse x="0" y="0" width="30" height="30"><Fill color="[CONFIGURATION.litColor]"/></Ellipse>
-        </PartDraw>
-      </Group>
-      <Group x="233" y="184" width="30" height="30" name="b2_248_199" alpha="round(floor((([MINUTE] % 10)) / 4) % 2)">
-        <PartDraw x="0" y="0" width="30" height="30">
-          <Ellipse x="0" y="0" width="30" height="30"><Fill color="[CONFIGURATION.litColor]"/></Ellipse>
-        </PartDraw>
-      </Group>
-      <Group x="233" y="236" width="30" height="30" name="b1_248_251" alpha="round(floor((([MINUTE] % 10)) / 2) % 2)">
-        <PartDraw x="0" y="0" width="30" height="30">
-          <Ellipse x="0" y="0" width="30" height="30"><Fill color="[CONFIGURATION.litColor]"/></Ellipse>
-        </PartDraw>
-      </Group>
-      <Group x="233" y="288" width="30" height="30" name="b0_248_303" alpha="round(floor((([MINUTE] % 10)) / 1) % 2)">
-        <PartDraw x="0" y="0" width="30" height="30">
-          <Ellipse x="0" y="0" width="30" height="30"><Fill color="[CONFIGURATION.litColor]"/></Ellipse>
-        </PartDraw>
-      </Group>
-      <Group x="279" y="184" width="30" height="30" name="b2_294_199" alpha="round(floor((floor([SECOND] / 10)) / 4) % 2)">
-        <PartDraw x="0" y="0" width="30" height="30">
-          <Ellipse x="0" y="0" width="30" height="30"><Fill color="[CONFIGURATION.litColor]"/></Ellipse>
-        </PartDraw>
-      </Group>
-      <Group x="279" y="236" width="30" height="30" name="b1_294_251" alpha="round(floor((floor([SECOND] / 10)) / 2) % 2)">
-        <PartDraw x="0" y="0" width="30" height="30">
-          <Ellipse x="0" y="0" width="30" height="30"><Fill color="[CONFIGURATION.litColor]"/></Ellipse>
-        </PartDraw>
-      </Group>
-      <Group x="279" y="288" width="30" height="30" name="b0_294_303" alpha="round(floor((floor([SECOND] / 10)) / 1) % 2)">
-        <PartDraw x="0" y="0" width="30" height="30">
-          <Ellipse x="0" y="0" width="30" height="30"><Fill color="[CONFIGURATION.litColor]"/></Ellipse>
-        </PartDraw>
-      </Group>
-      <Group x="325" y="132" width="30" height="30" name="b3_340_147" alpha="round(floor((([SECOND] % 10)) / 8) % 2)">
-        <PartDraw x="0" y="0" width="30" height="30">
-          <Ellipse x="0" y="0" width="30" height="30"><Fill color="[CONFIGURATION.litColor]"/></Ellipse>
-        </PartDraw>
-      </Group>
-      <Group x="325" y="184" width="30" height="30" name="b2_340_199" alpha="round(floor((([SECOND] % 10)) / 4) % 2)">
-        <PartDraw x="0" y="0" width="30" height="30">
-          <Ellipse x="0" y="0" width="30" height="30"><Fill color="[CONFIGURATION.litColor]"/></Ellipse>
-        </PartDraw>
-      </Group>
-      <Group x="325" y="236" width="30" height="30" name="b1_340_251" alpha="round(floor((([SECOND] % 10)) / 2) % 2)">
-        <PartDraw x="0" y="0" width="30" height="30">
-          <Ellipse x="0" y="0" width="30" height="30"><Fill color="[CONFIGURATION.litColor]"/></Ellipse>
-        </PartDraw>
-      </Group>
-      <Group x="325" y="288" width="30" height="30" name="b0_340_303" alpha="round(floor((([SECOND] % 10)) / 1) % 2)">
-        <PartDraw x="0" y="0" width="30" height="30">
-          <Ellipse x="0" y="0" width="30" height="30"><Fill color="[CONFIGURATION.litColor]"/></Ellipse>
-        </PartDraw>
-      </Group>
-      <Group name="bcd_labels" x="0" y="0" width="450" height="450"
-             alpha="[CONFIGURATION.labels] ? 1 : 0">
+      <Condition>
+        <Expressions>
+          <Expression name="b1_110_251">round(floor((floor([HOUR_0_23] / 10)) / 2) % 2)</Expression>
+        </Expressions>
+        <Compare expression="b1_110_251">
+          <Group x="95" y="236" width="30" height="30" name="b1_110_251">
+            <PartDraw x="0" y="0" width="30" height="30">
+              <Ellipse x="0" y="0" width="30" height="30"><Fill color="[CONFIGURATION.litColor]"/></Ellipse>
+            </PartDraw>
+          </Group>
+        </Compare>
+      </Condition>
+      <Condition>
+        <Expressions>
+          <Expression name="b0_110_303">round(floor((floor([HOUR_0_23] / 10)) / 1) % 2)</Expression>
+        </Expressions>
+        <Compare expression="b0_110_303">
+          <Group x="95" y="288" width="30" height="30" name="b0_110_303">
+            <PartDraw x="0" y="0" width="30" height="30">
+              <Ellipse x="0" y="0" width="30" height="30"><Fill color="[CONFIGURATION.litColor]"/></Ellipse>
+            </PartDraw>
+          </Group>
+        </Compare>
+      </Condition>
+      <Condition>
+        <Expressions>
+          <Expression name="b3_156_147">round(floor((([HOUR_0_23] % 10)) / 8) % 2)</Expression>
+        </Expressions>
+        <Compare expression="b3_156_147">
+          <Group x="141" y="132" width="30" height="30" name="b3_156_147">
+            <PartDraw x="0" y="0" width="30" height="30">
+              <Ellipse x="0" y="0" width="30" height="30"><Fill color="[CONFIGURATION.litColor]"/></Ellipse>
+            </PartDraw>
+          </Group>
+        </Compare>
+      </Condition>
+      <Condition>
+        <Expressions>
+          <Expression name="b2_156_199">round(floor((([HOUR_0_23] % 10)) / 4) % 2)</Expression>
+        </Expressions>
+        <Compare expression="b2_156_199">
+          <Group x="141" y="184" width="30" height="30" name="b2_156_199">
+            <PartDraw x="0" y="0" width="30" height="30">
+              <Ellipse x="0" y="0" width="30" height="30"><Fill color="[CONFIGURATION.litColor]"/></Ellipse>
+            </PartDraw>
+          </Group>
+        </Compare>
+      </Condition>
+      <Condition>
+        <Expressions>
+          <Expression name="b1_156_251">round(floor((([HOUR_0_23] % 10)) / 2) % 2)</Expression>
+        </Expressions>
+        <Compare expression="b1_156_251">
+          <Group x="141" y="236" width="30" height="30" name="b1_156_251">
+            <PartDraw x="0" y="0" width="30" height="30">
+              <Ellipse x="0" y="0" width="30" height="30"><Fill color="[CONFIGURATION.litColor]"/></Ellipse>
+            </PartDraw>
+          </Group>
+        </Compare>
+      </Condition>
+      <Condition>
+        <Expressions>
+          <Expression name="b0_156_303">round(floor((([HOUR_0_23] % 10)) / 1) % 2)</Expression>
+        </Expressions>
+        <Compare expression="b0_156_303">
+          <Group x="141" y="288" width="30" height="30" name="b0_156_303">
+            <PartDraw x="0" y="0" width="30" height="30">
+              <Ellipse x="0" y="0" width="30" height="30"><Fill color="[CONFIGURATION.litColor]"/></Ellipse>
+            </PartDraw>
+          </Group>
+        </Compare>
+      </Condition>
+      <Condition>
+        <Expressions>
+          <Expression name="b2_202_199">round(floor((floor([MINUTE] / 10)) / 4) % 2)</Expression>
+        </Expressions>
+        <Compare expression="b2_202_199">
+          <Group x="187" y="184" width="30" height="30" name="b2_202_199">
+            <PartDraw x="0" y="0" width="30" height="30">
+              <Ellipse x="0" y="0" width="30" height="30"><Fill color="[CONFIGURATION.litColor]"/></Ellipse>
+            </PartDraw>
+          </Group>
+        </Compare>
+      </Condition>
+      <Condition>
+        <Expressions>
+          <Expression name="b1_202_251">round(floor((floor([MINUTE] / 10)) / 2) % 2)</Expression>
+        </Expressions>
+        <Compare expression="b1_202_251">
+          <Group x="187" y="236" width="30" height="30" name="b1_202_251">
+            <PartDraw x="0" y="0" width="30" height="30">
+              <Ellipse x="0" y="0" width="30" height="30"><Fill color="[CONFIGURATION.litColor]"/></Ellipse>
+            </PartDraw>
+          </Group>
+        </Compare>
+      </Condition>
+      <Condition>
+        <Expressions>
+          <Expression name="b0_202_303">round(floor((floor([MINUTE] / 10)) / 1) % 2)</Expression>
+        </Expressions>
+        <Compare expression="b0_202_303">
+          <Group x="187" y="288" width="30" height="30" name="b0_202_303">
+            <PartDraw x="0" y="0" width="30" height="30">
+              <Ellipse x="0" y="0" width="30" height="30"><Fill color="[CONFIGURATION.litColor]"/></Ellipse>
+            </PartDraw>
+          </Group>
+        </Compare>
+      </Condition>
+      <Condition>
+        <Expressions>
+          <Expression name="b3_248_147">round(floor((([MINUTE] % 10)) / 8) % 2)</Expression>
+        </Expressions>
+        <Compare expression="b3_248_147">
+          <Group x="233" y="132" width="30" height="30" name="b3_248_147">
+            <PartDraw x="0" y="0" width="30" height="30">
+              <Ellipse x="0" y="0" width="30" height="30"><Fill color="[CONFIGURATION.litColor]"/></Ellipse>
+            </PartDraw>
+          </Group>
+        </Compare>
+      </Condition>
+      <Condition>
+        <Expressions>
+          <Expression name="b2_248_199">round(floor((([MINUTE] % 10)) / 4) % 2)</Expression>
+        </Expressions>
+        <Compare expression="b2_248_199">
+          <Group x="233" y="184" width="30" height="30" name="b2_248_199">
+            <PartDraw x="0" y="0" width="30" height="30">
+              <Ellipse x="0" y="0" width="30" height="30"><Fill color="[CONFIGURATION.litColor]"/></Ellipse>
+            </PartDraw>
+          </Group>
+        </Compare>
+      </Condition>
+      <Condition>
+        <Expressions>
+          <Expression name="b1_248_251">round(floor((([MINUTE] % 10)) / 2) % 2)</Expression>
+        </Expressions>
+        <Compare expression="b1_248_251">
+          <Group x="233" y="236" width="30" height="30" name="b1_248_251">
+            <PartDraw x="0" y="0" width="30" height="30">
+              <Ellipse x="0" y="0" width="30" height="30"><Fill color="[CONFIGURATION.litColor]"/></Ellipse>
+            </PartDraw>
+          </Group>
+        </Compare>
+      </Condition>
+      <Condition>
+        <Expressions>
+          <Expression name="b0_248_303">round(floor((([MINUTE] % 10)) / 1) % 2)</Expression>
+        </Expressions>
+        <Compare expression="b0_248_303">
+          <Group x="233" y="288" width="30" height="30" name="b0_248_303">
+            <PartDraw x="0" y="0" width="30" height="30">
+              <Ellipse x="0" y="0" width="30" height="30"><Fill color="[CONFIGURATION.litColor]"/></Ellipse>
+            </PartDraw>
+          </Group>
+        </Compare>
+      </Condition>
+      <Condition>
+        <Expressions>
+          <Expression name="b2_294_199">round(floor((floor([SECOND] / 10)) / 4) % 2)</Expression>
+        </Expressions>
+        <Compare expression="b2_294_199">
+          <Group x="279" y="184" width="30" height="30" name="b2_294_199">
+            <PartDraw x="0" y="0" width="30" height="30">
+              <Ellipse x="0" y="0" width="30" height="30"><Fill color="[CONFIGURATION.litColor]"/></Ellipse>
+            </PartDraw>
+          </Group>
+        </Compare>
+      </Condition>
+      <Condition>
+        <Expressions>
+          <Expression name="b1_294_251">round(floor((floor([SECOND] / 10)) / 2) % 2)</Expression>
+        </Expressions>
+        <Compare expression="b1_294_251">
+          <Group x="279" y="236" width="30" height="30" name="b1_294_251">
+            <PartDraw x="0" y="0" width="30" height="30">
+              <Ellipse x="0" y="0" width="30" height="30"><Fill color="[CONFIGURATION.litColor]"/></Ellipse>
+            </PartDraw>
+          </Group>
+        </Compare>
+      </Condition>
+      <Condition>
+        <Expressions>
+          <Expression name="b0_294_303">round(floor((floor([SECOND] / 10)) / 1) % 2)</Expression>
+        </Expressions>
+        <Compare expression="b0_294_303">
+          <Group x="279" y="288" width="30" height="30" name="b0_294_303">
+            <PartDraw x="0" y="0" width="30" height="30">
+              <Ellipse x="0" y="0" width="30" height="30"><Fill color="[CONFIGURATION.litColor]"/></Ellipse>
+            </PartDraw>
+          </Group>
+        </Compare>
+      </Condition>
+      <Condition>
+        <Expressions>
+          <Expression name="b3_340_147">round(floor((([SECOND] % 10)) / 8) % 2)</Expression>
+        </Expressions>
+        <Compare expression="b3_340_147">
+          <Group x="325" y="132" width="30" height="30" name="b3_340_147">
+            <PartDraw x="0" y="0" width="30" height="30">
+              <Ellipse x="0" y="0" width="30" height="30"><Fill color="[CONFIGURATION.litColor]"/></Ellipse>
+            </PartDraw>
+          </Group>
+        </Compare>
+      </Condition>
+      <Condition>
+        <Expressions>
+          <Expression name="b2_340_199">round(floor((([SECOND] % 10)) / 4) % 2)</Expression>
+        </Expressions>
+        <Compare expression="b2_340_199">
+          <Group x="325" y="184" width="30" height="30" name="b2_340_199">
+            <PartDraw x="0" y="0" width="30" height="30">
+              <Ellipse x="0" y="0" width="30" height="30"><Fill color="[CONFIGURATION.litColor]"/></Ellipse>
+            </PartDraw>
+          </Group>
+        </Compare>
+      </Condition>
+      <Condition>
+        <Expressions>
+          <Expression name="b1_340_251">round(floor((([SECOND] % 10)) / 2) % 2)</Expression>
+        </Expressions>
+        <Compare expression="b1_340_251">
+          <Group x="325" y="236" width="30" height="30" name="b1_340_251">
+            <PartDraw x="0" y="0" width="30" height="30">
+              <Ellipse x="0" y="0" width="30" height="30"><Fill color="[CONFIGURATION.litColor]"/></Ellipse>
+            </PartDraw>
+          </Group>
+        </Compare>
+      </Condition>
+      <Condition>
+        <Expressions>
+          <Expression name="b0_340_303">round(floor((([SECOND] % 10)) / 1) % 2)</Expression>
+        </Expressions>
+        <Compare expression="b0_340_303">
+          <Group x="325" y="288" width="30" height="30" name="b0_340_303">
+            <PartDraw x="0" y="0" width="30" height="30">
+              <Ellipse x="0" y="0" width="30" height="30"><Fill color="[CONFIGURATION.litColor]"/></Ellipse>
+            </PartDraw>
+          </Group>
+        </Compare>
+      </Condition>
+          <BooleanConfiguration id="labels">
+            <BooleanOption id="TRUE">
+              <Group name="bcd_labels" x="0" y="0" width="450" height="450">
         <PartText x="87" y="316" width="46" height="52">
           <Text align="CENTER">
-            <SimpleText>
-              <Font family="SYNC_TO_DEVICE" size="22" weight="NORMAL" color="#FF8A8A8A">
-                <Template>H</Template>
-              </Font>
-            </SimpleText>
+            <Font family="SYNC_TO_DEVICE" size="22" weight="NORMAL" color="#FF8A8A8A">H</Font>
           </Text>
         </PartText>
         <PartText x="133" y="316" width="46" height="52">
           <Text align="CENTER">
-            <SimpleText>
-              <Font family="SYNC_TO_DEVICE" size="22" weight="NORMAL" color="#FF8A8A8A">
-                <Template>H</Template>
-              </Font>
-            </SimpleText>
+            <Font family="SYNC_TO_DEVICE" size="22" weight="NORMAL" color="#FF8A8A8A">H</Font>
           </Text>
         </PartText>
         <PartText x="179" y="316" width="46" height="52">
           <Text align="CENTER">
-            <SimpleText>
-              <Font family="SYNC_TO_DEVICE" size="22" weight="NORMAL" color="#FF8A8A8A">
-                <Template>M</Template>
-              </Font>
-            </SimpleText>
+            <Font family="SYNC_TO_DEVICE" size="22" weight="NORMAL" color="#FF8A8A8A">M</Font>
           </Text>
         </PartText>
         <PartText x="225" y="316" width="46" height="52">
           <Text align="CENTER">
-            <SimpleText>
-              <Font family="SYNC_TO_DEVICE" size="22" weight="NORMAL" color="#FF8A8A8A">
-                <Template>M</Template>
-              </Font>
-            </SimpleText>
+            <Font family="SYNC_TO_DEVICE" size="22" weight="NORMAL" color="#FF8A8A8A">M</Font>
           </Text>
         </PartText>
         <PartText x="271" y="316" width="46" height="52">
           <Text align="CENTER">
-            <SimpleText>
-              <Font family="SYNC_TO_DEVICE" size="22" weight="NORMAL" color="#FF8A8A8A">
-                <Template>S</Template>
-              </Font>
-            </SimpleText>
+            <Font family="SYNC_TO_DEVICE" size="22" weight="NORMAL" color="#FF8A8A8A">S</Font>
           </Text>
         </PartText>
         <PartText x="317" y="316" width="46" height="52">
           <Text align="CENTER">
-            <SimpleText>
-              <Font family="SYNC_TO_DEVICE" size="22" weight="NORMAL" color="#FF8A8A8A">
-                <Template>S</Template>
-              </Font>
-            </SimpleText>
+            <Font family="SYNC_TO_DEVICE" size="22" weight="NORMAL" color="#FF8A8A8A">S</Font>
           </Text>
         </PartText>
-      </Group>
-    </Group>
+              </Group>
+            </BooleanOption>
+          </BooleanConfiguration>
+        </Group>
+      </BooleanOption>
+    </BooleanConfiguration>
   </Scene>
 </WatchFace>
