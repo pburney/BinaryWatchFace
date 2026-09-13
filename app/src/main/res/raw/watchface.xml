@@ -22,7 +22,8 @@
       <ColorOption id="11" displayName="color_orange" colors="#FFFF9E42"/>
       <ColorOption id="12" displayName="color_amber" colors="#FFFFC24B"/>
       <ColorOption id="13" displayName="color_yellow" colors="#FFFFE14D"/>
-      <ColorOption id="14" displayName="color_white" colors="#FFF5F5F5"/>
+      <ColorOption id="14" displayName="color_olive" colors="#FF8C8F5A"/>
+      <ColorOption id="15" displayName="color_white" colors="#FFF5F5F5"/>
     </ColorConfiguration>
   </UserConfigurations>
 
@@ -31,6 +32,84 @@
     <PartDraw x="0" y="0" width="450" height="450">
       <Rectangle x="0" y="0" width="450" height="450"><Fill color="#FF000000"/></Rectangle>
     </PartDraw>
+
+    <!-- complications: independent of BCD/binary mode, so they sit outside
+         that switch rather than being duplicated into both branches. -->
+    <ComplicationSlot x="125" y="382" width="200" height="36" slotId="3" displayName="slot_date" supportedTypes="SHORT_TEXT EMPTY">
+      <DefaultProviderPolicy defaultSystemProvider="DAY_AND_DATE" defaultSystemProviderType="SHORT_TEXT"/>
+      <BoundingRoundBox x="0" y="0" width="200" height="36" cornerRadius="8"/>
+      <Complication type="SHORT_TEXT">
+        <Condition>
+          <Expressions>
+            <Expression name="date_on"><![CDATA[[COMPLICATION.TEXT] != null]]></Expression>
+          </Expressions>
+          <Compare expression="date_on">
+            <PartText x="0" y="0" width="200" height="36">
+              <Text align="CENTER">
+                <Font family="SYNC_TO_DEVICE" size="30" weight="NORMAL" color="[CONFIGURATION.litColor]">
+                  <Template>%s<Parameter expression="[COMPLICATION.TEXT]"/></Template>
+                </Font>
+              </Text>
+            </PartText>
+          </Compare>
+        </Condition>
+      </Complication>
+    </ComplicationSlot>
+    <ComplicationSlot x="98" y="48" width="120" height="68" slotId="1" displayName="slot_heart" supportedTypes="SHORT_TEXT EMPTY">
+      <DefaultProviderPolicy defaultSystemProvider="HEART_RATE" defaultSystemProviderType="SHORT_TEXT"/>
+      <BoundingRoundBox x="0" y="0" width="120" height="68" cornerRadius="12"/>
+      <Complication type="SHORT_TEXT">
+        <Condition>
+          <Expressions>
+            <Expression name="heart_on"><![CDATA[[COMPLICATION.TEXT] != null]]></Expression>
+          </Expressions>
+          <Compare expression="heart_on">
+            <PartImage x="0" y="16" width="36" height="36" tintColor="[CONFIGURATION.litColor]">
+              <Image resource="heart_icon"/>
+            </PartImage>
+            <PartText x="36" y="0" width="84" height="68">
+              <Text align="CENTER" ellipsis="TRUE">
+                <Font family="SYNC_TO_DEVICE" size="30" weight="NORMAL" color="[CONFIGURATION.litColor]">
+                  <Template>%s<Parameter expression="[COMPLICATION.TEXT]"/></Template>
+                </Font>
+              </Text>
+            </PartText>
+          </Compare>
+        </Condition>
+      </Complication>
+    </ComplicationSlot>
+    <ComplicationSlot x="232" y="48" width="120" height="68" slotId="2" displayName="slot_weather" supportedTypes="SHORT_TEXT EMPTY">
+      <BoundingRoundBox x="0" y="0" width="120" height="68" cornerRadius="12"/>
+      <Complication type="SHORT_TEXT">
+        <Condition>
+          <Expressions>
+            <Expression name="weather_icon_text"><![CDATA[[COMPLICATION.TEXT] != null && [COMPLICATION.MONOCHROMATIC_IMAGE] != null]]></Expression>
+            <Expression name="weather_text"><![CDATA[[COMPLICATION.TEXT] != null]]></Expression>
+          </Expressions>
+          <Compare expression="weather_icon_text">
+            <PartText x="0" y="0" width="84" height="68">
+              <Text align="CENTER" ellipsis="TRUE">
+                <Font family="SYNC_TO_DEVICE" size="30" weight="NORMAL" color="[CONFIGURATION.litColor]">
+                  <Template>%s<Parameter expression="[COMPLICATION.TEXT]"/></Template>
+                </Font>
+              </Text>
+            </PartText>
+            <PartImage x="84" y="16" width="36" height="36" tintColor="[CONFIGURATION.litColor]">
+              <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]"/>
+            </PartImage>
+          </Compare>
+          <Compare expression="weather_text">
+            <PartText x="0" y="0" width="120" height="68">
+              <Text align="CENTER" ellipsis="TRUE">
+                <Font family="SYNC_TO_DEVICE" size="30" weight="NORMAL" color="[CONFIGURATION.litColor]">
+                  <Template>%s<Parameter expression="[COMPLICATION.TEXT]"/></Template>
+                </Font>
+              </Text>
+            </PartText>
+          </Compare>
+        </Condition>
+      </Complication>
+    </ComplicationSlot>
 
     <!-- BCD vs BINARY is a UserConfiguration selection, not a per-frame value,
          so it's modelled as a BooleanConfiguration/BooleanOption switch rather
@@ -314,17 +393,17 @@
               <Group name="binary_labels" x="0" y="0" width="450" height="450">
         <PartText x="41" y="147" width="46" height="52">
           <Text align="CENTER">
-            <Font family="SYNC_TO_DEVICE" size="22" weight="NORMAL" color="#FF8A8A8A">H</Font>
+            <Font family="SYNC_TO_DEVICE" size="26" weight="NORMAL" color="#FF8A8A8A">H</Font>
           </Text>
         </PartText>
         <PartText x="41" y="199" width="46" height="52">
           <Text align="CENTER">
-            <Font family="SYNC_TO_DEVICE" size="22" weight="NORMAL" color="#FF8A8A8A">M</Font>
+            <Font family="SYNC_TO_DEVICE" size="26" weight="NORMAL" color="#FF8A8A8A">M</Font>
           </Text>
         </PartText>
         <PartText x="41" y="251" width="46" height="52">
           <Text align="CENTER">
-            <Font family="SYNC_TO_DEVICE" size="22" weight="NORMAL" color="#FF8A8A8A">S</Font>
+            <Font family="SYNC_TO_DEVICE" size="26" weight="NORMAL" color="#FF8A8A8A">S</Font>
           </Text>
         </PartText>
               </Group>
@@ -639,32 +718,32 @@
               <Group name="bcd_labels" x="0" y="0" width="450" height="450">
         <PartText x="87" y="316" width="46" height="52">
           <Text align="CENTER">
-            <Font family="SYNC_TO_DEVICE" size="22" weight="NORMAL" color="#FF8A8A8A">H</Font>
+            <Font family="SYNC_TO_DEVICE" size="26" weight="NORMAL" color="#FF8A8A8A">H</Font>
           </Text>
         </PartText>
         <PartText x="133" y="316" width="46" height="52">
           <Text align="CENTER">
-            <Font family="SYNC_TO_DEVICE" size="22" weight="NORMAL" color="#FF8A8A8A">H</Font>
+            <Font family="SYNC_TO_DEVICE" size="26" weight="NORMAL" color="#FF8A8A8A">H</Font>
           </Text>
         </PartText>
         <PartText x="179" y="316" width="46" height="52">
           <Text align="CENTER">
-            <Font family="SYNC_TO_DEVICE" size="22" weight="NORMAL" color="#FF8A8A8A">M</Font>
+            <Font family="SYNC_TO_DEVICE" size="26" weight="NORMAL" color="#FF8A8A8A">M</Font>
           </Text>
         </PartText>
         <PartText x="225" y="316" width="46" height="52">
           <Text align="CENTER">
-            <Font family="SYNC_TO_DEVICE" size="22" weight="NORMAL" color="#FF8A8A8A">M</Font>
+            <Font family="SYNC_TO_DEVICE" size="26" weight="NORMAL" color="#FF8A8A8A">M</Font>
           </Text>
         </PartText>
         <PartText x="271" y="316" width="46" height="52">
           <Text align="CENTER">
-            <Font family="SYNC_TO_DEVICE" size="22" weight="NORMAL" color="#FF8A8A8A">S</Font>
+            <Font family="SYNC_TO_DEVICE" size="26" weight="NORMAL" color="#FF8A8A8A">S</Font>
           </Text>
         </PartText>
         <PartText x="317" y="316" width="46" height="52">
           <Text align="CENTER">
-            <Font family="SYNC_TO_DEVICE" size="22" weight="NORMAL" color="#FF8A8A8A">S</Font>
+            <Font family="SYNC_TO_DEVICE" size="26" weight="NORMAL" color="#FF8A8A8A">S</Font>
           </Text>
         </PartText>
               </Group>

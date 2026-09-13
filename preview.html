@@ -19,7 +19,7 @@
 </div>
 <script>
 const R = 15, GX = 46, MID = 225.0, OFF = "#1C1C1C", LABEL = "#8A8A8A";
-const ON = [{n:"Green",c:"#33FF66"},{n:"Emerald",c:"#00C853"},{n:"Teal",c:"#1DE9B6"},{n:"Cyan",c:"#33E1FF"},{n:"Blue",c:"#33B5FF"},{n:"Indigo",c:"#5C6BC0"},{n:"Violet",c:"#9B7BFF"},{n:"Purple",c:"#C061FF"},{n:"Magenta",c:"#FF5CD2"},{n:"Pink",c:"#FF6EA6"},{n:"Red",c:"#FF5A5A"},{n:"Orange",c:"#FF9E42"},{n:"Amber",c:"#FFC24B"},{n:"Yellow",c:"#FFE14D"},{n:"White",c:"#F5F5F5"}];
+const ON = [{n:"Green",c:"#33FF66"},{n:"Emerald",c:"#00C853"},{n:"Teal",c:"#1DE9B6"},{n:"Cyan",c:"#33E1FF"},{n:"Blue",c:"#33B5FF"},{n:"Indigo",c:"#5C6BC0"},{n:"Violet",c:"#9B7BFF"},{n:"Purple",c:"#C061FF"},{n:"Magenta",c:"#FF5CD2"},{n:"Pink",c:"#FF6EA6"},{n:"Red",c:"#FF5A5A"},{n:"Orange",c:"#FF9E42"},{n:"Amber",c:"#FFC24B"},{n:"Yellow",c:"#FFE14D"},{n:"Olive",c:"#8C8F5A"},{n:"White",c:"#F5F5F5"}];
 const BINARY = [{x:110.0,y:173.0,k:5,src:"[HOUR_0_23]",label:"H"},{x:156.0,y:173.0,k:4,src:"[HOUR_0_23]",label:null},{x:202.0,y:173.0,k:3,src:"[HOUR_0_23]",label:null},{x:248.0,y:173.0,k:2,src:"[HOUR_0_23]",label:null},{x:294.0,y:173.0,k:1,src:"[HOUR_0_23]",label:null},{x:340.0,y:173.0,k:0,src:"[HOUR_0_23]",label:null},{x:110.0,y:225.0,k:5,src:"[MINUTE]",label:"M"},{x:156.0,y:225.0,k:4,src:"[MINUTE]",label:null},{x:202.0,y:225.0,k:3,src:"[MINUTE]",label:null},{x:248.0,y:225.0,k:2,src:"[MINUTE]",label:null},{x:294.0,y:225.0,k:1,src:"[MINUTE]",label:null},{x:340.0,y:225.0,k:0,src:"[MINUTE]",label:null},{x:110.0,y:277.0,k:5,src:"[SECOND]",label:"S"},{x:156.0,y:277.0,k:4,src:"[SECOND]",label:null},{x:202.0,y:277.0,k:3,src:"[SECOND]",label:null},{x:248.0,y:277.0,k:2,src:"[SECOND]",label:null},{x:294.0,y:277.0,k:1,src:"[SECOND]",label:null},{x:340.0,y:277.0,k:0,src:"[SECOND]",label:null}];
 const BCD = [{x:110.0,y:251.0,k:1,src:"floor([HOUR_0_23] / 10)",label:null},{x:110.0,y:303.0,k:0,src:"floor([HOUR_0_23] / 10)",label:"H"},{x:156.0,y:147.0,k:3,src:"([HOUR_0_23] % 10)",label:null},{x:156.0,y:199.0,k:2,src:"([HOUR_0_23] % 10)",label:null},{x:156.0,y:251.0,k:1,src:"([HOUR_0_23] % 10)",label:null},{x:156.0,y:303.0,k:0,src:"([HOUR_0_23] % 10)",label:"h"},{x:202.0,y:199.0,k:2,src:"floor([MINUTE] / 10)",label:null},{x:202.0,y:251.0,k:1,src:"floor([MINUTE] / 10)",label:null},{x:202.0,y:303.0,k:0,src:"floor([MINUTE] / 10)",label:"M"},{x:248.0,y:147.0,k:3,src:"([MINUTE] % 10)",label:null},{x:248.0,y:199.0,k:2,src:"([MINUTE] % 10)",label:null},{x:248.0,y:251.0,k:1,src:"([MINUTE] % 10)",label:null},{x:248.0,y:303.0,k:0,src:"([MINUTE] % 10)",label:"m"},{x:294.0,y:199.0,k:2,src:"floor([SECOND] / 10)",label:null},{x:294.0,y:251.0,k:1,src:"floor([SECOND] / 10)",label:null},{x:294.0,y:303.0,k:0,src:"floor([SECOND] / 10)",label:"S"},{x:340.0,y:147.0,k:3,src:"([SECOND] % 10)",label:null},{x:340.0,y:199.0,k:2,src:"([SECOND] % 10)",label:null},{x:340.0,y:251.0,k:1,src:"([SECOND] % 10)",label:null},{x:340.0,y:303.0,k:0,src:"([SECOND] % 10)",label:"s"}];
 const svg = document.getElementById("face");
@@ -46,7 +46,7 @@ function draw() {
     if (showLabels && c.label) {
       const lx = bcd ? c.x : c.x - GX;
       const ly = (bcd ? MID + 150 : c.y) + 7;
-      s += `<text x="${lx}" y="${ly}" fill="${LABEL}" font-size="22" text-anchor="middle" font-family="system-ui">${c.label.toUpperCase()}</text>`;
+      s += `<text x="${lx}" y="${ly}" fill="${LABEL}" font-size="26" text-anchor="middle" font-family="system-ui">${c.label.toUpperCase()}</text>`;
     }
   }
   svg.innerHTML = s;

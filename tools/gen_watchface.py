@@ -27,11 +27,13 @@ The per-LED bit test is pure arithmetic so it works on every WFF version:
       lit = round( floor(value / 2**k) % 2 )
 """
 
+import math
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 RAW  = ROOT / "app" / "src" / "main" / "res" / "raw" / "watchface.xml"
 PREVIEW = ROOT / "preview.html"
+HEART_ICON = ROOT / "app" / "src" / "main" / "res" / "drawable" / "heart_icon.png"
 
 # ---- geometry -----------------------------------------------------------
 CANVAS = 450
@@ -62,9 +64,20 @@ ON_OPTS = [
     ("Orange",  "#FFFF9E42"),
     ("Amber",   "#FFFFC24B"),
     ("Yellow",  "#FFFFE14D"),
+    ("Olive",   "#FF8C8F5A"),
     ("White",   "#FFF5F5F5"),
 ]
 DEFAULT_COLOR = 0    # index into ON_OPTS
+
+# ---- widgets: date readout + two complication slots (heart rate, weather) --
+# Sizes/positions chosen so both slots and the date line clear the LED grid
+# (worst case: BCD mode with labels, which uses the most vertical space) AND
+# stay inside the circular clip -- checked against the actual chord width at
+# each corner, not just the square canvas.
+DATE_X, DATE_Y, DATE_W, DATE_H = 125, 382, 200, 36
+WIDGET_W, WIDGET_H = 120, 68          # complication slot size, px -- wide rather than square,
+WIDGET_Y = 48                         # so icon+text has room without clipping
+WIDGET_MARGIN_X = 98                  # inset from each edge to the slot's near edge
 
 # ---- clock model  (label, WFF value expression, number of bits) --------
 BINARY_ROWS = [
@@ -159,11 +172,157 @@ def wff_labels(layout):
         out.append(
             f'        <PartText x="{x}" y="{y}" width="{GX}" height="{GY}">\n'
             f'          <Text align="CENTER">\n'
-            f'            <Font family="SYNC_TO_DEVICE" size="22" '
+            f'            <Font family="SYNC_TO_DEVICE" size="26" '
             f'weight="NORMAL" color="{LABEL}">{c["label"].upper()}</Font>\n'
             f'          </Text>\n'
             f'        </PartText>')
     return "\n".join(out)
+
+
+def build_heart_icon():
+    """Rasterize a heart to app/src/main/res/drawable/heart_icon.png. WFF's
+    Image loader appears to only handle raster drawables -- a VectorDrawable
+    XML compiled fine but never rendered on-device -- so this uses the
+    standard parametric heart curve (x=16sin^3t, y=13cos t - 5cos 2t -
+    2cos 3t - cos 4t) rather than a vector asset. Solid white on transparent;
+    the watch face tints it to the LED color at render time via tintColor."""
+    from PIL import Image, ImageDraw
+    SS, SIZE = 4, 128                     # supersample then downscale for smooth edges
+    S = SIZE * SS
+    pts = []
+    for i in range(240):
+        t = 2 * math.pi * i / 240
+        x = 16 * math.sin(t) ** 3
+        y = 13 * math.cos(t) - 5 * math.cos(2 * t) - 2 * math.cos(3 * t) - math.cos(4 * t)
+        pts.append((x, y))
+    xs, ys = [p[0] for p in pts], [p[1] for p in pts]
+    minx, maxx, miny, maxy = min(xs), max(xs), min(ys), max(ys)
+    w, h = maxx - minx, maxy - miny
+    pad = 0.06
+    scale = (1 - 2 * pad) * S / max(w, h)
+    ox, oy = (S - w * scale) / 2, (S - h * scale) / 2
+
+    def to_px(x, y):
+        return (x - minx) * scale + ox, S - ((y - miny) * scale + oy)  # flip y: formula is y-up
+
+    img = Image.new("RGBA", (S, S), (0, 0, 0, 0))
+    ImageDraw.Draw(img).polygon([to_px(x, y) for x, y in pts], fill=(255, 255, 255, 255))
+    img.resize((SIZE, SIZE), Image.LANCZOS).save(HEART_ICON)
+
+
+def wff_complication_date() -> str:
+    """Bottom-center: [COMPLICATION.TEXT], defaults to the on-device DATE
+    system provider (locale-formatted, no setup needed) -- reassignable to
+    anything else SHORT_TEXT via the standard complication editor, same as
+    the other two slots. A rectangular BoundingRoundBox fits its wide/short
+    shape better than the ovals used for the two square widget slots."""
+    return (
+        f'    <ComplicationSlot x="{DATE_X}" y="{DATE_Y}" width="{DATE_W}" height="{DATE_H}" '
+        f'slotId="3" displayName="slot_date" supportedTypes="SHORT_TEXT EMPTY">\n'
+        f'      <DefaultProviderPolicy defaultSystemProvider="DAY_AND_DATE" defaultSystemProviderType="SHORT_TEXT"/>\n'
+        f'      <BoundingRoundBox x="0" y="0" width="{DATE_W}" height="{DATE_H}" cornerRadius="8"/>\n'
+        f'      <Complication type="SHORT_TEXT">\n'
+        f'        <Condition>\n'
+        f'          <Expressions>\n'
+        f'            <Expression name="date_on"><![CDATA[[COMPLICATION.TEXT] != null]]></Expression>\n'
+        f'          </Expressions>\n'
+        f'          <Compare expression="date_on">\n'
+        f'            <PartText x="0" y="0" width="{DATE_W}" height="{DATE_H}">\n'
+        f'              <Text align="CENTER">\n'
+        f'                <Font family="SYNC_TO_DEVICE" size="30" weight="NORMAL" color="[CONFIGURATION.litColor]">\n'
+        f'                  <Template>%s<Parameter expression="[COMPLICATION.TEXT]"/></Template>\n'
+        f'                </Font>\n'
+        f'              </Text>\n'
+        f'            </PartText>\n'
+        f'          </Compare>\n'
+        f'        </Condition>\n'
+        f'      </Complication>\n'
+        f'    </ComplicationSlot>')
+
+
+def wff_complication_heart(x: int) -> str:
+    """Top-left: our own heart_icon drawable (tinted to litColor -- Android
+    renders a bare Unicode heart glyph as a fixed-color emoji regardless of
+    the Font color, so a real icon resource is the only reliable way to
+    match the LED color) + [COMPLICATION.TEXT], defaulting to the on-device
+    HEART_RATE system provider (no app/setup needed), still reassignable by
+    the user like any complication. Invisible until a provider is assigned --
+    an unassigned slot already renders nothing, so no separate toggle needed."""
+    icon = 36                     # left region for the heart icon; text fills the rest
+    text_w = WIDGET_W - icon
+    return (
+        f'    <ComplicationSlot x="{x}" y="{WIDGET_Y}" width="{WIDGET_W}" height="{WIDGET_H}" '
+        f'slotId="1" displayName="slot_heart" supportedTypes="SHORT_TEXT EMPTY">\n'
+        f'      <DefaultProviderPolicy defaultSystemProvider="HEART_RATE" defaultSystemProviderType="SHORT_TEXT"/>\n'
+        f'      <BoundingRoundBox x="0" y="0" width="{WIDGET_W}" height="{WIDGET_H}" cornerRadius="12"/>\n'
+        f'      <Complication type="SHORT_TEXT">\n'
+        f'        <Condition>\n'
+        f'          <Expressions>\n'
+        f'            <Expression name="heart_on">'
+        f'<![CDATA[[COMPLICATION.TEXT] != null]]></Expression>\n'
+        f'          </Expressions>\n'
+        f'          <Compare expression="heart_on">\n'
+        f'            <PartImage x="0" y="{(WIDGET_H - icon) // 2}" width="{icon}" height="{icon}" '
+        f'tintColor="[CONFIGURATION.litColor]">\n'
+        f'              <Image resource="heart_icon"/>\n'
+        f'            </PartImage>\n'
+        f'            <PartText x="{icon}" y="0" width="{text_w}" height="{WIDGET_H}">\n'
+        f'              <Text align="CENTER" ellipsis="TRUE">\n'
+        f'                <Font family="SYNC_TO_DEVICE" size="30" weight="NORMAL" color="[CONFIGURATION.litColor]">\n'
+        f'                  <Template>%s<Parameter expression="[COMPLICATION.TEXT]"/></Template>\n'
+        f'                </Font>\n'
+        f'              </Text>\n'
+        f'            </PartText>\n'
+        f'          </Compare>\n'
+        f'        </Condition>\n'
+        f'      </Complication>\n'
+        f'    </ComplicationSlot>')
+
+
+def wff_complication_weather(x: int) -> str:
+    """Top-right: [COMPLICATION.TEXT] (temperature) + the provider's own icon
+    when it supplies one -- no built-in system weather provider exists, so
+    this stays unassigned (invisible) until the user picks a weather app in
+    the on-watch complication editor."""
+    icon = 36                     # right region for the icon; text fills the rest on the left
+    text_w = WIDGET_W - icon
+    icon_y = (WIDGET_H - icon) // 2
+    return (
+        f'    <ComplicationSlot x="{x}" y="{WIDGET_Y}" width="{WIDGET_W}" height="{WIDGET_H}" '
+        f'slotId="2" displayName="slot_weather" supportedTypes="SHORT_TEXT EMPTY">\n'
+        f'      <BoundingRoundBox x="0" y="0" width="{WIDGET_W}" height="{WIDGET_H}" cornerRadius="12"/>\n'
+        f'      <Complication type="SHORT_TEXT">\n'
+        f'        <Condition>\n'
+        f'          <Expressions>\n'
+        f'            <Expression name="weather_icon_text"><![CDATA['
+        f'[COMPLICATION.TEXT] != null && [COMPLICATION.MONOCHROMATIC_IMAGE] != null]]></Expression>\n'
+        f'            <Expression name="weather_text">'
+        f'<![CDATA[[COMPLICATION.TEXT] != null]]></Expression>\n'
+        f'          </Expressions>\n'
+        f'          <Compare expression="weather_icon_text">\n'
+        f'            <PartText x="0" y="0" width="{text_w}" height="{WIDGET_H}">\n'
+        f'              <Text align="CENTER" ellipsis="TRUE">\n'
+        f'                <Font family="SYNC_TO_DEVICE" size="30" weight="NORMAL" color="[CONFIGURATION.litColor]">\n'
+        f'                  <Template>%s<Parameter expression="[COMPLICATION.TEXT]"/></Template>\n'
+        f'                </Font>\n'
+        f'              </Text>\n'
+        f'            </PartText>\n'
+        f'            <PartImage x="{text_w}" y="{icon_y}" width="{icon}" height="{icon}" tintColor="[CONFIGURATION.litColor]">\n'
+        f'              <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]"/>\n'
+        f'            </PartImage>\n'
+        f'          </Compare>\n'
+        f'          <Compare expression="weather_text">\n'
+        f'            <PartText x="0" y="0" width="{WIDGET_W}" height="{WIDGET_H}">\n'
+        f'              <Text align="CENTER" ellipsis="TRUE">\n'
+        f'                <Font family="SYNC_TO_DEVICE" size="30" weight="NORMAL" color="[CONFIGURATION.litColor]">\n'
+        f'                  <Template>%s<Parameter expression="[COMPLICATION.TEXT]"/></Template>\n'
+        f'                </Font>\n'
+        f'              </Text>\n'
+        f'            </PartText>\n'
+        f'          </Compare>\n'
+        f'        </Condition>\n'
+        f'      </Complication>\n'
+        f'    </ComplicationSlot>')
 
 
 def build_wff() -> str:
@@ -194,6 +353,12 @@ def build_wff() -> str:
     <PartDraw x="0" y="0" width="{CANVAS}" height="{CANVAS}">
       <Rectangle x="0" y="0" width="{CANVAS}" height="{CANVAS}"><Fill color="{BG}"/></Rectangle>
     </PartDraw>
+
+    <!-- complications: independent of BCD/binary mode, so they sit outside
+         that switch rather than being duplicated into both branches. -->
+{wff_complication_date()}
+{wff_complication_heart(WIDGET_MARGIN_X)}
+{wff_complication_weather(CANVAS - WIDGET_MARGIN_X - WIDGET_W)}
 
     <!-- BCD vs BINARY is a UserConfiguration selection, not a per-frame value,
          so it's modelled as a BooleanConfiguration/BooleanOption switch rather
@@ -281,7 +446,7 @@ function draw() {
     if (showLabels && c.label) {
       const lx = bcd ? c.x : c.x - GX;
       const ly = (bcd ? MID + 150 : c.y) + 7;
-      s += `<text x="${lx}" y="${ly}" fill="${LABEL}" font-size="22" text-anchor="middle" font-family="system-ui">${c.label.toUpperCase()}</text>`;
+      s += `<text x="${lx}" y="${ly}" fill="${LABEL}" font-size="26" text-anchor="middle" font-family="system-ui">${c.label.toUpperCase()}</text>`;
     }
   }
   svg.innerHTML = s;
@@ -329,10 +494,13 @@ def build_html() -> str:
 
 def main():
     RAW.parent.mkdir(parents=True, exist_ok=True)
+    HEART_ICON.parent.mkdir(parents=True, exist_ok=True)
+    build_heart_icon()
     RAW.write_text(build_wff(), encoding="utf-8")
     PREVIEW.write_text(build_html(), encoding="utf-8")
     n_bin = sum(nb for _, _, nb in BINARY_ROWS)
     n_bcd = sum(nb for _, _, nb in BCD_COLS)
+    print(f"wrote {HEART_ICON.relative_to(ROOT)}")
     print(f"wrote {RAW.relative_to(ROOT)}   ({n_bin} binary + {n_bcd} BCD LEDs)")
     print(f"wrote {PREVIEW.relative_to(ROOT)}   (open in a browser)")
 

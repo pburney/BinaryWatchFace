@@ -4,6 +4,9 @@
     <string name="cfg_bcd">BCD mode</string>
     <string name="cfg_labels">Row labels</string>
     <string name="cfg_color">LED color</string>
+    <string name="slot_heart">Heart rate</string>
+    <string name="slot_weather">Weather</string>
+    <string name="slot_date">Date</string>
 
     <string name="color_green">Green</string>
     <string name="color_emerald">Emerald</string>
@@ -19,5 +22,6 @@
     <string name="color_orange">Orange</string>
     <string name="color_amber">Amber</string>
     <string name="color_yellow">Yellow</string>
+    <string name="color_olive">Olive</string>
     <string name="color_white">White</string>
 </resources>
