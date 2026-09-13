@@ -1,0 +1,57 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Binary Watch Face - preview</title>
+<style>
+  body { background:#111; color:#ccc; font:14px system-ui; text-align:center; margin:0; padding:24px; }
+  svg  { background:#000; border-radius:50%; box-shadow:0 0 40px #0008; }
+  label { margin:0 10px; }
+  .wrap { display:inline-block; }
+</style>
+<div class="wrap">
+  <h2>Binary Watch Face</h2>
+  <svg id="face" width="360" height="360" viewBox="0 0 450 450"></svg>
+  <div style="margin-top:14px">
+    <label><input type="checkbox" id="bcd"> BCD mode</label>
+    <label><input type="checkbox" id="labels" checked> labels</label>
+    <label>color <select id="color"></select></label>
+  </div>
+  <p id="readout" style="color:#666"></p>
+</div>
+<script>
+const R = 15, GX = 46, MID = 225.0, OFF = "#1C1C1C", LABEL = "#8A8A8A";
+const ON = [{n:"Green",c:"#33FF66"},{n:"Emerald",c:"#00C853"},{n:"Teal",c:"#1DE9B6"},{n:"Cyan",c:"#33E1FF"},{n:"Blue",c:"#33B5FF"},{n:"Indigo",c:"#5C6BC0"},{n:"Violet",c:"#9B7BFF"},{n:"Purple",c:"#C061FF"},{n:"Magenta",c:"#FF5CD2"},{n:"Pink",c:"#FF6EA6"},{n:"Red",c:"#FF5A5A"},{n:"Orange",c:"#FF9E42"},{n:"Amber",c:"#FFC24B"},{n:"Yellow",c:"#FFE14D"},{n:"White",c:"#F5F5F5"}];
+const BINARY = [{x:110.0,y:173.0,k:5,src:"[HOUR_0_23]",label:"H"},{x:156.0,y:173.0,k:4,src:"[HOUR_0_23]",label:null},{x:202.0,y:173.0,k:3,src:"[HOUR_0_23]",label:null},{x:248.0,y:173.0,k:2,src:"[HOUR_0_23]",label:null},{x:294.0,y:173.0,k:1,src:"[HOUR_0_23]",label:null},{x:340.0,y:173.0,k:0,src:"[HOUR_0_23]",label:null},{x:110.0,y:225.0,k:5,src:"[MINUTE]",label:"M"},{x:156.0,y:225.0,k:4,src:"[MINUTE]",label:null},{x:202.0,y:225.0,k:3,src:"[MINUTE]",label:null},{x:248.0,y:225.0,k:2,src:"[MINUTE]",label:null},{x:294.0,y:225.0,k:1,src:"[MINUTE]",label:null},{x:340.0,y:225.0,k:0,src:"[MINUTE]",label:null},{x:110.0,y:277.0,k:5,src:"[SECOND]",label:"S"},{x:156.0,y:277.0,k:4,src:"[SECOND]",label:null},{x:202.0,y:277.0,k:3,src:"[SECOND]",label:null},{x:248.0,y:277.0,k:2,src:"[SECOND]",label:null},{x:294.0,y:277.0,k:1,src:"[SECOND]",label:null},{x:340.0,y:277.0,k:0,src:"[SECOND]",label:null}];
+const BCD = [{x:110.0,y:251.0,k:1,src:"floor([HOUR_0_23] / 10)",label:null},{x:110.0,y:303.0,k:0,src:"floor([HOUR_0_23] / 10)",label:"H"},{x:156.0,y:147.0,k:3,src:"([HOUR_0_23] % 10)",label:null},{x:156.0,y:199.0,k:2,src:"([HOUR_0_23] % 10)",label:null},{x:156.0,y:251.0,k:1,src:"([HOUR_0_23] % 10)",label:null},{x:156.0,y:303.0,k:0,src:"([HOUR_0_23] % 10)",label:"h"},{x:202.0,y:199.0,k:2,src:"floor([MINUTE] / 10)",label:null},{x:202.0,y:251.0,k:1,src:"floor([MINUTE] / 10)",label:null},{x:202.0,y:303.0,k:0,src:"floor([MINUTE] / 10)",label:"M"},{x:248.0,y:147.0,k:3,src:"([MINUTE] % 10)",label:null},{x:248.0,y:199.0,k:2,src:"([MINUTE] % 10)",label:null},{x:248.0,y:251.0,k:1,src:"([MINUTE] % 10)",label:null},{x:248.0,y:303.0,k:0,src:"([MINUTE] % 10)",label:"m"},{x:294.0,y:199.0,k:2,src:"floor([SECOND] / 10)",label:null},{x:294.0,y:251.0,k:1,src:"floor([SECOND] / 10)",label:null},{x:294.0,y:303.0,k:0,src:"floor([SECOND] / 10)",label:"S"},{x:340.0,y:147.0,k:3,src:"([SECOND] % 10)",label:null},{x:340.0,y:199.0,k:2,src:"([SECOND] % 10)",label:null},{x:340.0,y:251.0,k:1,src:"([SECOND] % 10)",label:null},{x:340.0,y:303.0,k:0,src:"([SECOND] % 10)",label:"s"}];
+const svg = document.getElementById("face");
+const sel = document.getElementById("color");
+ON.forEach((opt, i) => { const el = document.createElement("option"); el.value = i; el.textContent = opt.n; sel.appendChild(el); });
+
+function value(src, now) {           // mirror the WFF value expressions
+  const H = now.getHours(), M = now.getMinutes(), S = now.getSeconds();
+  src = src.replaceAll("[HOUR_0_23]", H).replaceAll("[MINUTE]", M).replaceAll("[SECOND]", S);
+  src = src.replace(/floor\(([^()]+)\)/g, (_, e) => "Math.floor(" + e + ")");
+  return Function('"use strict";return (' + src + ')')();
+}
+function bit(src, k, now) { return Math.round(Math.floor(value(src, now) / (2 ** k)) % 2); }
+
+function draw() {
+  const now = new Date();
+  const bcd = document.getElementById("bcd").checked;
+  const showLabels = document.getElementById("labels").checked;
+  const on = ON[sel.value].c;
+  let s = "";
+  for (const c of (bcd ? BCD : BINARY)) {
+    const lit = bit(c.src, c.k, now);
+    s += `<circle cx="${c.x}" cy="${c.y}" r="${R}" fill="${lit ? on : OFF}"/>`;
+    if (showLabels && c.label) {
+      const lx = bcd ? c.x : c.x - GX;
+      const ly = (bcd ? MID + 150 : c.y) + 7;
+      s += `<text x="${lx}" y="${ly}" fill="${LABEL}" font-size="22" text-anchor="middle" font-family="system-ui">${c.label.toUpperCase()}</text>`;
+    }
+  }
+  svg.innerHTML = s;
+  document.getElementById("readout").textContent =
+    now.toTimeString().slice(0, 8) + (bcd ? "   (BCD)" : "   (binary)");
+}
+setInterval(draw, 250); draw();
+</script>

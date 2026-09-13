@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Binary</string>
+    <string name="cfg_bcd">BCD mode</string>
+    <string name="cfg_labels">Row labels</string>
+    <string name="cfg_color">LED color</string>
+</resources>
