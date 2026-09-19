@@ -102,12 +102,14 @@ source, an OSI license, reproducible build. Caveats: F-Droid's Wear OS install
 path is clunky and watch-face discoverability there is near zero. A common
 lighter first step is **IzzyOnDroid** (add-on repo, easier acceptance).
 
-**Recommended:** license the repo (Apache-2.0 keeps it maximally reusable and
-matches Google's own Wear samples; GPLv3 if you want copyleft), push to
-GitHub/Codeberg, ship the *same signed APK* to Play and attach it to repo
-releases + submit to IzzyOnDroid/F-Droid. A binary/BCD clock isn't novel IP —
-several exist — but a clean generator-driven WFF one is a tidy open-source
-contribution and portfolio piece.
+**License:** Apache-2.0 (see `LICENSE`) — matches Google's own Wear samples,
+maximally reusable. Push to GitHub, ship the *same signed APK* to Play and
+attach it to repo releases + submit to IzzyOnDroid/F-Droid. A binary/BCD
+clock isn't novel IP — several exist — but a clean generator-driven WFF one
+is a tidy open-source contribution and portfolio piece.
+
+See also: [QuinaryWatchFace](https://github.com/pburney/QuinaryWatchFace),
+the base-5 sibling face built from this same toolchain.
 
 Not applicable: Facer / WatchMaker are separate ecosystems with their own
 creator tools, not WFF APKs.

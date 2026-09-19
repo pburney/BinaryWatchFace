@@ -406,6 +406,27 @@
             <Font family="SYNC_TO_DEVICE" size="26" weight="NORMAL" color="#FF8A8A8A">S</Font>
           </Text>
         </PartText>
+        <PartText x="364" y="155" width="44" height="36">
+          <Text align="CENTER">
+            <Font family="SYNC_TO_DEVICE" size="26" weight="NORMAL" color="#FF8A8A8A">
+              <Template>%02d<Parameter expression="[HOUR_0_23]"/></Template>
+            </Font>
+          </Text>
+        </PartText>
+        <PartText x="364" y="207" width="44" height="36">
+          <Text align="CENTER">
+            <Font family="SYNC_TO_DEVICE" size="26" weight="NORMAL" color="#FF8A8A8A">
+              <Template>%02d<Parameter expression="[MINUTE]"/></Template>
+            </Font>
+          </Text>
+        </PartText>
+        <PartText x="364" y="259" width="44" height="36">
+          <Text align="CENTER">
+            <Font family="SYNC_TO_DEVICE" size="26" weight="NORMAL" color="#FF8A8A8A">
+              <Template>%02d<Parameter expression="[SECOND]"/></Template>
+            </Font>
+          </Text>
+        </PartText>
               </Group>
             </BooleanOption>
           </BooleanConfiguration>

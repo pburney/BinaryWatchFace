@@ -179,6 +179,38 @@ def wff_labels(layout):
     return "\n".join(out)
 
 
+# "Cheat mode" decimal readout (2026-09-19, ported from QuinaryWatchFace):
+# the raw H/M/S decimal value printed to the RIGHT of each BINARY-mode row,
+# mirroring the row's letter label on the left, so the raw bit pattern can
+# be sanity-checked against the actual time at a glance. Reuses the same
+# "labels" toggle rather than adding a new one -- same reasoning as
+# Quinary's version. BCD mode doesn't get this: each of its columns
+# already directly IS a decimal digit, so a readout there would just
+# repeat what's already decoded.
+DECIMAL_W, DECIMAL_H = 44, 36
+DECIMAL_EXPRS = {"H": "[HOUR_0_23]", "M": "[MINUTE]", "S": "[SECOND]"}
+
+
+def wff_decimal_readout():
+    n = len(BINARY_ROWS)
+    out = []
+    for r, (label, expr, nbits) in enumerate(BINARY_ROWS):
+        cy = C + (r - (n - 1) / 2) * GY
+        rightmost_cx = C + (nbits - 1) / 2 * GX
+        dx = rightmost_cx + GX
+        x, y = round(dx - DECIMAL_W / 2), round(cy - DECIMAL_H / 2)
+        out.append(
+            f'        <PartText x="{x}" y="{y}" width="{DECIMAL_W}" height="{DECIMAL_H}">\n'
+            f'          <Text align="CENTER">\n'
+            f'            <Font family="SYNC_TO_DEVICE" size="26" '
+            f'weight="NORMAL" color="{LABEL}">\n'
+            f'              <Template>%02d<Parameter expression="{DECIMAL_EXPRS[label]}"/></Template>\n'
+            f'            </Font>\n'
+            f'          </Text>\n'
+            f'        </PartText>')
+    return "\n".join(out)
+
+
 def build_heart_icon():
     """Rasterize a heart to app/src/main/res/drawable/heart_icon.png. WFF's
     Image loader appears to only handle raster drawables -- a VectorDrawable
@@ -372,6 +404,7 @@ def build_wff() -> str:
             <BooleanOption id="TRUE">
               <Group name="binary_labels" x="0" y="0" width="{CANVAS}" height="{CANVAS}">
 {b_labels}
+{wff_decimal_readout()}
               </Group>
             </BooleanOption>
           </BooleanConfiguration>
